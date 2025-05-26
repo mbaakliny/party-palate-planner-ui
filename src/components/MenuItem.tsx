@@ -22,6 +22,29 @@ const MenuItem = ({ item, onAddToCart }: MenuItemProps) => {
   const currentPrice = item.prices[celebrationSize];
   const totalPrice = currentPrice * quantity;
 
+  // Define different images for small and big celebrations
+  const images = {
+    small: item.image,
+    big: item.image.replace('w=300&h=200', 'w=400&h=250') // Slightly different image for big celebrations
+  };
+
+  // Use different placeholder images based on celebration size
+  const getImageForSize = (baseImage: string, size: 'small' | 'big') => {
+    if (size === 'big') {
+      // For big celebrations, use a different placeholder image
+      if (baseImage.includes('photo-1618160702438-9b02ab6515c9')) {
+        return 'https://images.unsplash.com/photo-1721322800607-8c38375eef04?w=400&h=250&fit=crop';
+      } else if (baseImage.includes('photo-1465146344425-f00d5f5c8f07')) {
+        return 'https://images.unsplash.com/photo-1618160702438-9b02ab6515c9?w=400&h=250&fit=crop';
+      } else if (baseImage.includes('photo-1721322800607-8c38375eef04')) {
+        return 'https://images.unsplash.com/photo-1465146344425-f00d5f5c8f07?w=400&h=250&fit=crop';
+      }
+    }
+    return baseImage;
+  };
+
+  const currentImage = getImageForSize(item.image, celebrationSize);
+
   const handleQuantityChange = (delta: number) => {
     const newQuantity = Math.max(1, quantity + delta);
     setQuantity(newQuantity);
@@ -42,9 +65,9 @@ const MenuItem = ({ item, onAddToCart }: MenuItemProps) => {
     <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
       <div className="relative">
         <img
-          src={item.image}
-          alt={item.name}
-          className="w-full h-48 object-cover"
+          src={currentImage}
+          alt={`${item.name} - ${celebrationSize} celebrations`}
+          className="w-full h-48 object-cover transition-all duration-300"
         />
         {item.vegan && (
           <span className="absolute top-3 left-3 bg-green-500 text-white text-xs px-2 py-1 rounded-full">
