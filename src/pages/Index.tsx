@@ -1,11 +1,22 @@
-
 import { useState } from 'react';
+import { Button } from "@/components/ui/button";
+import { useToast } from "@/hooks/use-toast";
 import Hero from '../components/Hero';
 import Navigation from '../components/Navigation';
 import MenuSection from '../components/MenuSection';
 
+interface OrderItem {
+  itemId: number;
+  itemName: string;
+  celebrationSize: 'small' | 'big';
+  quantity: number;
+  unitPrice: number;
+  totalPrice: number;
+}
+
 const Index = () => {
-  const [cartItems, setCartItems] = useState([]);
+  const [orderItems, setOrderItems] = useState<Record<string, OrderItem>>({});
+  const { toast } = useToast();
 
   const menuData = {
     "Party Pastries": [
@@ -88,10 +99,65 @@ const Index = () => {
     ]
   };
 
-  const addToCart = (item) => {
-    setCartItems(prev => [...prev, item]);
-    console.log('Added to cart:', item);
+  const handleQuantityChange = (itemId: number, celebrationSize: 'small' | 'big', quantity: number, unitPrice: number) => {
+    const key = `${itemId}-${celebrationSize}`;
+    const item = Object.values(menuData).flat().find(item => item.id === itemId);
+    
+    if (quantity === 0) {
+      // Remove item from order if quantity is 0
+      setOrderItems(prev => {
+        const newItems = { ...prev };
+        delete newItems[key];
+        return newItems;
+      });
+    } else {
+      // Add or update item in order
+      setOrderItems(prev => ({
+        ...prev,
+        [key]: {
+          itemId,
+          itemName: item?.name || '',
+          celebrationSize,
+          quantity,
+          unitPrice,
+          totalPrice: quantity * unitPrice
+        }
+      }));
+    }
   };
+
+  const handleSendOrderRequest = () => {
+    const orderList = Object.values(orderItems);
+    
+    if (orderList.length === 0) {
+      toast({
+        title: "No items selected",
+        description: "Please add items to your order before sending the request.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    const totalAmount = orderList.reduce((sum, item) => sum + item.totalPrice, 0);
+    
+    console.log('Order Request:', {
+      items: orderList,
+      totalAmount,
+      timestamp: new Date().toISOString()
+    });
+
+    toast({
+      title: "Order Request Sent!",
+      description: `Your order with ${orderList.length} items (Total: $${totalAmount.toFixed(2)}) has been submitted.`
+    });
+
+    // Reset the order
+    setOrderItems({});
+  };
+
+  const orderList = Object.values(orderItems);
+  const totalAmount = orderList.reduce((sum, item) => sum + item.totalPrice, 0);
+  const totalItems = orderList.reduce((sum, item) => sum + item.quantity, 0);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -104,9 +170,34 @@ const Index = () => {
             key={category}
             title={category}
             items={items}
-            onAddToCart={addToCart}
+            onQuantityChange={handleQuantityChange}
           />
         ))}
+
+        {/* Order Summary and Send Button */}
+        {orderList.length > 0 && (
+          <div className="sticky bottom-0 bg-white border-t-2 border-orange-500 shadow-lg p-6 mt-16">
+            <div className="container mx-auto">
+              <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+                <div className="text-center md:text-left">
+                  <h3 className="text-xl font-bold text-gray-800">
+                    Order Summary: {totalItems} items
+                  </h3>
+                  <p className="text-2xl font-bold text-orange-600">
+                    Total: ${totalAmount.toFixed(2)}
+                  </p>
+                </div>
+                <Button 
+                  onClick={handleSendOrderRequest}
+                  size="lg"
+                  className="bg-orange-500 hover:bg-orange-600 text-white font-semibold px-8 py-3"
+                >
+                  Send Order Request
+                </Button>
+              </div>
+            </div>
+          </div>
+        )}
       </main>
       
       <footer className="bg-gray-900 text-white py-12 mt-16">

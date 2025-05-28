@@ -12,21 +12,15 @@ interface MenuItemProps {
     prices: { small: number; big: number };
     vegan: boolean;
   };
-  onAddToCart: (item: any) => void;
+  onQuantityChange: (itemId: number, celebrationSize: 'small' | 'big', quantity: number, unitPrice: number) => void;
 }
 
-const MenuItem = ({ item, onAddToCart }: MenuItemProps) => {
+const MenuItem = ({ item, onQuantityChange }: MenuItemProps) => {
   const [celebrationSize, setCelebrationSize] = useState<'small' | 'big'>('small');
-  const [quantity, setQuantity] = useState(1);
+  const [quantity, setQuantity] = useState(0);
 
   const currentPrice = item.prices[celebrationSize];
   const totalPrice = currentPrice * quantity;
-
-  // Define different images for small and big celebrations
-  const images = {
-    small: item.image,
-    big: item.image.replace('w=300&h=200', 'w=400&h=250') // Slightly different image for big celebrations
-  };
 
   // Use different placeholder images based on celebration size
   const getImageForSize = (baseImage: string, size: 'small' | 'big') => {
@@ -46,19 +40,15 @@ const MenuItem = ({ item, onAddToCart }: MenuItemProps) => {
   const currentImage = getImageForSize(item.image, celebrationSize);
 
   const handleQuantityChange = (delta: number) => {
-    const newQuantity = Math.max(1, quantity + delta);
+    const newQuantity = Math.max(0, quantity + delta);
     setQuantity(newQuantity);
+    onQuantityChange(item.id, celebrationSize, newQuantity, currentPrice);
   };
 
-  const handleAddToCart = () => {
-    const cartItem = {
-      ...item,
-      celebrationSize,
-      quantity,
-      unitPrice: currentPrice,
-      totalPrice
-    };
-    onAddToCart(cartItem);
+  const handleSizeChange = (newSize: 'small' | 'big') => {
+    setCelebrationSize(newSize);
+    // Update the parent with the new size and current quantity
+    onQuantityChange(item.id, newSize, quantity, item.prices[newSize]);
   };
 
   return (
@@ -87,7 +77,7 @@ const MenuItem = ({ item, onAddToCart }: MenuItemProps) => {
           </label>
           <div className="flex gap-2">
             <button
-              onClick={() => setCelebrationSize('small')}
+              onClick={() => handleSizeChange('small')}
               className={`flex-1 py-2 px-3 text-sm font-medium rounded-md border transition-colors ${
                 celebrationSize === 'small'
                   ? 'bg-orange-500 text-white border-orange-500'
@@ -97,7 +87,7 @@ const MenuItem = ({ item, onAddToCart }: MenuItemProps) => {
               Small Celebrations
             </button>
             <button
-              onClick={() => setCelebrationSize('big')}
+              onClick={() => handleSizeChange('big')}
               className={`flex-1 py-2 px-3 text-sm font-medium rounded-md border transition-colors ${
                 celebrationSize === 'big'
                   ? 'bg-orange-500 text-white border-orange-500'
@@ -115,9 +105,9 @@ const MenuItem = ({ item, onAddToCart }: MenuItemProps) => {
             <button
               onClick={() => handleQuantityChange(-1)}
               className="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-50 transition-colors"
-              disabled={quantity <= 1}
+              disabled={quantity <= 0}
             >
-              <Minus size={16} className={quantity <= 1 ? 'text-gray-300' : 'text-gray-600'} />
+              <Minus size={16} className={quantity <= 0 ? 'text-gray-300' : 'text-gray-600'} />
             </button>
             <span className="font-medium text-lg w-8 text-center">{quantity}</span>
             <button
@@ -129,23 +119,16 @@ const MenuItem = ({ item, onAddToCart }: MenuItemProps) => {
           </div>
           
           <div className="text-right">
-            <div className="text-2xl font-bold text-orange-600">
-              ${totalPrice.toFixed(2)}
+            <div className="text-lg font-medium text-gray-600">
+              ${currentPrice.toFixed(2)} each
             </div>
-            {quantity > 1 && (
-              <div className="text-sm text-gray-500">
-                ${currentPrice.toFixed(2)} each
+            {quantity > 0 && (
+              <div className="text-xl font-bold text-orange-600">
+                Total: ${totalPrice.toFixed(2)}
               </div>
             )}
           </div>
         </div>
-
-        <Button 
-          onClick={handleAddToCart}
-          className="w-full bg-orange-500 hover:bg-orange-600 text-white font-medium py-2"
-        >
-          Continue Order
-        </Button>
       </div>
     </div>
   );
