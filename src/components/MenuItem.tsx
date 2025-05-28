@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Minus, Plus } from 'lucide-react';
 
@@ -13,14 +13,28 @@ interface MenuItemProps {
     vegan: boolean;
   };
   onQuantityChange: (itemId: number, celebrationSize: 'small' | 'big', quantity: number, unitPrice: number) => void;
+  orderItems: Record<string, any>;
 }
 
-const MenuItem = ({ item, onQuantityChange }: MenuItemProps) => {
+const MenuItem = ({ item, onQuantityChange, orderItems }: MenuItemProps) => {
   const [celebrationSize, setCelebrationSize] = useState<'small' | 'big'>('small');
-  const [quantity, setQuantity] = useState(0);
+  const [quantities, setQuantities] = useState<{ small: number; big: number }>({ small: 0, big: 0 });
 
   const currentPrice = item.prices[celebrationSize];
-  const totalPrice = currentPrice * quantity;
+  const currentQuantity = quantities[celebrationSize];
+
+  // Initialize quantities from existing order items
+  useEffect(() => {
+    const smallKey = `${item.id}-small`;
+    const bigKey = `${item.id}-big`;
+    const smallOrder = orderItems[smallKey];
+    const bigOrder = orderItems[bigKey];
+    
+    setQuantities({
+      small: smallOrder?.quantity || 0,
+      big: bigOrder?.quantity || 0
+    });
+  }, [item.id, orderItems]);
 
   // Use different placeholder images based on celebration size
   const getImageForSize = (baseImage: string, size: 'small' | 'big') => {
@@ -40,15 +54,14 @@ const MenuItem = ({ item, onQuantityChange }: MenuItemProps) => {
   const currentImage = getImageForSize(item.image, celebrationSize);
 
   const handleQuantityChange = (delta: number) => {
-    const newQuantity = Math.max(0, quantity + delta);
-    setQuantity(newQuantity);
+    const newQuantity = Math.max(0, currentQuantity + delta);
+    const newQuantities = { ...quantities, [celebrationSize]: newQuantity };
+    setQuantities(newQuantities);
     onQuantityChange(item.id, celebrationSize, newQuantity, currentPrice);
   };
 
   const handleSizeChange = (newSize: 'small' | 'big') => {
     setCelebrationSize(newSize);
-    // Update the parent with the new size and current quantity
-    onQuantityChange(item.id, newSize, quantity, item.prices[newSize]);
   };
 
   return (
@@ -105,11 +118,11 @@ const MenuItem = ({ item, onQuantityChange }: MenuItemProps) => {
             <button
               onClick={() => handleQuantityChange(-1)}
               className="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-50 transition-colors"
-              disabled={quantity <= 0}
+              disabled={currentQuantity <= 0}
             >
-              <Minus size={16} className={quantity <= 0 ? 'text-gray-300' : 'text-gray-600'} />
+              <Minus size={16} className={currentQuantity <= 0 ? 'text-gray-300' : 'text-gray-600'} />
             </button>
-            <span className="font-medium text-lg w-8 text-center">{quantity}</span>
+            <span className="font-medium text-lg w-8 text-center">{currentQuantity}</span>
             <button
               onClick={() => handleQuantityChange(1)}
               className="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-50 transition-colors"
@@ -122,9 +135,9 @@ const MenuItem = ({ item, onQuantityChange }: MenuItemProps) => {
             <div className="text-lg font-medium text-gray-600">
               ${currentPrice.toFixed(2)} each
             </div>
-            {quantity > 0 && (
+            {currentQuantity > 0 && (
               <div className="text-xl font-bold text-orange-600">
-                Total: ${totalPrice.toFixed(2)}
+                Total: ${(currentPrice * currentQuantity).toFixed(2)}
               </div>
             )}
           </div>

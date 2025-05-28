@@ -12,9 +12,10 @@ interface MenuSectionProps {
     vegan: boolean;
   }>;
   onQuantityChange: (itemId: number, celebrationSize: 'small' | 'big', quantity: number, unitPrice: number) => void;
+  orderItems: Record<string, any>;
 }
 
-const MenuSection = ({ title, items, onQuantityChange }: MenuSectionProps) => {
+const MenuSection = ({ title, items, onQuantityChange, orderItems }: MenuSectionProps) => {
   return (
     <section className="mb-16">
       <div className="flex items-center justify-between mb-8">
@@ -30,6 +31,7 @@ const MenuSection = ({ title, items, onQuantityChange }: MenuSectionProps) => {
             key={item.id}
             item={item}
             onQuantityChange={onQuantityChange}
+            orderItems={orderItems}
           />
         ))}
       </div>

@@ -4,6 +4,7 @@ import { useToast } from "@/hooks/use-toast";
 import Hero from '../components/Hero';
 import Navigation from '../components/Navigation';
 import MenuSection from '../components/MenuSection';
+import OrderSummaryModal from '../components/OrderSummaryModal';
 
 interface OrderItem {
   itemId: number;
@@ -16,6 +17,7 @@ interface OrderItem {
 
 const Index = () => {
   const [orderItems, setOrderItems] = useState<Record<string, OrderItem>>({});
+  const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
   const { toast } = useToast();
 
   const menuData = {
@@ -126,6 +128,15 @@ const Index = () => {
     }
   };
 
+  const handleRemoveItem = (itemId: number, celebrationSize: 'small' | 'big') => {
+    const key = `${itemId}-${celebrationSize}`;
+    setOrderItems(prev => {
+      const newItems = { ...prev };
+      delete newItems[key];
+      return newItems;
+    });
+  };
+
   const handleSendOrderRequest = () => {
     const orderList = Object.values(orderItems);
     
@@ -171,6 +182,7 @@ const Index = () => {
             title={category}
             items={items}
             onQuantityChange={handleQuantityChange}
+            orderItems={orderItems}
           />
         ))}
 
@@ -187,18 +199,36 @@ const Index = () => {
                     Total: ${totalAmount.toFixed(2)}
                   </p>
                 </div>
-                <Button 
-                  onClick={handleSendOrderRequest}
-                  size="lg"
-                  className="bg-orange-500 hover:bg-orange-600 text-white font-semibold px-8 py-3"
-                >
-                  Send Order Request
-                </Button>
+                <div className="flex gap-3">
+                  <Button 
+                    onClick={() => setIsOrderModalOpen(true)}
+                    variant="outline"
+                    size="lg"
+                    className="font-semibold px-8 py-3"
+                  >
+                    View Order
+                  </Button>
+                  <Button 
+                    onClick={handleSendOrderRequest}
+                    size="lg"
+                    className="bg-orange-500 hover:bg-orange-600 text-white font-semibold px-8 py-3"
+                  >
+                    Send Order Request
+                  </Button>
+                </div>
               </div>
             </div>
           </div>
         )}
       </main>
+
+      <OrderSummaryModal
+        isOpen={isOrderModalOpen}
+        onClose={() => setIsOrderModalOpen(false)}
+        orderItems={orderItems}
+        onQuantityChange={handleQuantityChange}
+        onRemoveItem={handleRemoveItem}
+      />
       
       <footer className="bg-gray-900 text-white py-12 mt-16">
         <div className="container mx-auto px-4">
