@@ -1,0 +1,13 @@
+
+{
+  "name": "catering-menu-pro-wordpress",
+  "version": "1.0.0",
+  "description": "WordPress build configuration for Catering Menu Pro",
+  "scripts": {
+    "build-wordpress": "vite build --config build-config/vite.config.wordpress.js",
+    "dev-wordpress": "vite --config build-config/vite.config.wordpress.js"
+  },
+  "devDependencies": {
+    "vite": "^5.0.0"
+  }
+}
