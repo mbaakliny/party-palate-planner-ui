@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
@@ -13,6 +12,15 @@ interface OrderItem {
   quantity: number;
   unitPrice: number;
   totalPrice: number;
+}
+
+interface MenuItem {
+  id: number;
+  name: string;
+  description: string;
+  image: string;
+  prices: { small: number; big: number };
+  vegan: boolean;
 }
 
 interface WordPressData {
@@ -31,7 +39,7 @@ declare global {
 const WordPressApp = () => {
   const [orderItems, setOrderItems] = useState<Record<string, OrderItem>>({});
   const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
-  const [menuData, setMenuData] = useState<any>({});
+  const [menuData, setMenuData] = useState<Record<string, MenuItem[]>>({});
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
 
@@ -71,7 +79,7 @@ const WordPressApp = () => {
 
   const handleQuantityChange = (itemId: number, celebrationSize: 'small' | 'big', quantity: number, unitPrice: number) => {
     const key = `${itemId}-${celebrationSize}`;
-    const item = Object.values(menuData).flat().find((item: any) => item.id === itemId);
+    const item = Object.values(menuData).flat().find((item: MenuItem) => item.id === itemId);
     
     if (quantity === 0) {
       setOrderItems(prev => {
@@ -174,7 +182,7 @@ const WordPressApp = () => {
           <MenuSection
             key={category}
             title={category}
-            items={items as any[]}
+            items={items}
             onQuantityChange={handleQuantityChange}
             orderItems={orderItems}
           />

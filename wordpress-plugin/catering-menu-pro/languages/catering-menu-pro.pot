@@ -1,0 +1,27 @@
+
+# Copyright (C) 2024 Catering Menu Pro
+# This file is distributed under the same license as the Catering Menu Pro package.
+msgid ""
+msgstr ""
+"Project-Id-Version: Catering Menu Pro 1.0.0\n"
+"Report-Msgid-Bugs-To: https://yoursite.com\n"
+"POT-Creation-Date: 2024-01-01 12:00+0000\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+
+msgid "Catering Menu Pro"
+msgstr ""
+
+msgid "Professional catering menu with order management system"
+msgstr ""
+
+msgid "Orders"
+msgstr ""
+
+msgid "Settings"
+msgstr ""
+
+msgid "Menu Items"
+msgstr ""

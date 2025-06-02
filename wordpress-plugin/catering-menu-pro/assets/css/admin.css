@@ -1,0 +1,78 @@
+
+.cmp-admin-page {
+    max-width: 1200px;
+    margin: 20px 0;
+}
+
+.cmp-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.cmp-stat-card {
+    background: white;
+    border: 1px solid #ccd0d4;
+    border-radius: 4px;
+    padding: 20px;
+    text-align: center;
+}
+
+.cmp-stat-number {
+    font-size: 32px;
+    font-weight: bold;
+    color: #1d2327;
+    display: block;
+}
+
+.cmp-stat-label {
+    color: #646970;
+    font-size: 14px;
+    margin-top: 5px;
+}
+
+.cmp-orders-table {
+    background: white;
+    border: 1px solid #ccd0d4;
+    border-radius: 4px;
+}
+
+.cmp-orders-table th,
+.cmp-orders-table td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #eee;
+}
+
+.cmp-orders-table th {
+    background: #f6f7f7;
+    font-weight: 600;
+}
+
+.cmp-status-badge {
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.cmp-status-pending {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.cmp-status-processing {
+    background: #cff4fc;
+    color: #055160;
+}
+
+.cmp-status-completed {
+    background: #d1e7dd;
+    color: #0a3622;
+}
+
+.cmp-status-cancelled {
+    background: #f8d7da;
+    color: #721c24;
+}
