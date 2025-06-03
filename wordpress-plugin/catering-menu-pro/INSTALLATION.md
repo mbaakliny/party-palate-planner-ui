@@ -10,11 +10,12 @@
 
 2. **Build the React App**
    ```bash
-   # In your React project root
-   npm run build-wordpress
+   # Make sure you have the vite.config.wordpress.js file in your project root
+   # Then run the build script
+   node build-wordpress.js
    
-   # Copy build folder to plugin directory
-   cp -r build wordpress-plugin/catering-menu-pro/
+   # OR manually with npx:
+   npx vite build --config vite.config.wordpress.js
    ```
 
 3. **Use the Shortcode**
@@ -23,20 +24,31 @@
 
 ## Manual Build Process
 
-If you don't have the build commands set up:
+If you need to build manually:
 
-1. **Install Vite (if not already installed)**
+1. **Ensure Vite is available**
    ```bash
+   # Vite should be available via npx, if not install it:
    npm install vite --save-dev
    ```
 
 2. **Build for WordPress**
    ```bash
-   npx vite build --config wordpress-plugin/catering-menu-pro/build-config/vite.config.wordpress.js
+   npx vite build --config vite.config.wordpress.js
    ```
 
-3. **Copy build files**
-   - Copy the generated `dist` folder contents to `wordpress-plugin/catering-menu-pro/build/`
+3. **Verify build files**
+   - Check that `wordpress-plugin/catering-menu-pro/build/` contains:
+     - `assets/index.js` (the React app)
+     - `assets/index.css` (styles)
+
+## Build Script Usage
+
+The `build-wordpress.js` script will:
+- Check if the WordPress Vite config exists
+- Run the build process
+- Verify the output files are created
+- Provide next steps for plugin installation
 
 ## Elementor Integration
 
@@ -55,18 +67,35 @@ After activation, you'll find:
 
 ## Troubleshooting
 
+**Plugin activation fails?**
+- Check WordPress error logs
+- Ensure PHP version is 7.4 or higher
+- Verify database permissions
+
 **Menu not loading?**
 - Check if build files exist in `build/` directory
 - Verify plugin is activated
 - Check browser console for JavaScript errors
+- Ensure WordPress REST API is working
 
 **Orders not saving?**
 - Check database tables were created (wp_cmp_orders, wp_cmp_menu_items)
 - Verify WordPress REST API is working
+- Check browser console for API errors
 
 **Styling issues?**
 - Plugin includes CSS reset for Elementor compatibility
 - Add custom CSS in WordPress Customizer if needed
+
+## Build Files Location
+
+The build process creates files in:
+```
+wordpress-plugin/catering-menu-pro/build/
+├── assets/
+│   ├── index.js    (React app bundle)
+│   └── index.css   (Styles)
+```
 
 ## Support
 
