@@ -15,6 +15,13 @@ try {
     process.exit(1);
   }
 
+  // Check if main-wordpress.tsx exists
+  if (!fs.existsSync('src/main-wordpress.tsx')) {
+    console.error('Error: src/main-wordpress.tsx not found!');
+    console.log('Please make sure the WordPress entry file exists.');
+    process.exit(1);
+  }
+
   // Run the build command
   console.log('Running Vite build...');
   execSync('npx vite build --config vite.config.wordpress.js', { stdio: 'inherit' });

@@ -18,7 +18,7 @@ module.exports = defineConfig({
       entry: path.resolve(__dirname, 'src/main-wordpress.tsx'),
       name: 'CateringMenu',
       formats: ['iife'],
-      fileName: () => 'assets/index.js'
+      fileName: () => 'index.js'
     },
     define: {
       global: 'globalThis',
