@@ -22,15 +22,29 @@ try {
     process.exit(1);
   }
 
-  // Run the build command
-  console.log('Running Vite build...');
-  execSync('npx vite build --config vite.config.wordpress.js', { stdio: 'inherit' });
-
-  // Check if build was successful
+  // Clean previous build
   const buildPath = path.join('wordpress-plugin', 'catering-menu-pro', 'build');
   if (fs.existsSync(buildPath)) {
+    console.log('Cleaning previous build...');
+    fs.rmSync(buildPath, { recursive: true, force: true });
+  }
+
+  // Ensure build directory exists
+  fs.mkdirSync(buildPath, { recursive: true });
+
+  // Run the build command
+  console.log('Running Vite build...');
+  execSync('npx vite build --config vite.config.wordpress.js', { 
+    stdio: 'inherit',
+    env: { ...process.env, NODE_ENV: 'production' }
+  });
+
+  // Check if build was successful
+  if (fs.existsSync(buildPath)) {
+    const files = fs.readdirSync(buildPath, { recursive: true });
     console.log('✅ Build completed successfully!');
     console.log(`Build files created in: ${buildPath}`);
+    console.log('Generated files:', files);
     console.log('\nNext steps:');
     console.log('1. Zip the wordpress-plugin/catering-menu-pro folder');
     console.log('2. Upload and activate the plugin in WordPress');
@@ -41,5 +55,7 @@ try {
 
 } catch (error) {
   console.error('Build failed:', error.message);
+  if (error.stdout) console.log('STDOUT:', error.stdout.toString());
+  if (error.stderr) console.log('STDERR:', error.stderr.toString());
   process.exit(1);
 }

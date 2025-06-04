@@ -22,7 +22,9 @@ module.exports = defineConfig({
     },
     define: {
       global: 'globalThis',
-    }
+    },
+    minify: 'terser',
+    sourcemap: false
   },
   resolve: {
     alias: {
